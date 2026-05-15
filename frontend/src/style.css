@@ -1,0 +1,915 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+
+body {
+  width: 100%;
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: scroll;
+
+  background: black;
+  font-family: system-ui, Arial, sans-serif;
+}
+
+/* كل صفحة = full screen */
+.page-section {
+  height: 100vh;
+  width: 100%;
+
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+
+  position: relative;
+}
+
+/* مهم لثبات الأداء مع Three.js */
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 0;
+}
+
+/* =======================
+   CUSTOM SCROLLBAR مظهر(NEW ✨)
+======================= */
+
+/* width */
+*::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+/* track */
+*::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+}
+
+/* thumb */
+*::-webkit-scrollbar-thumb {
+  background: rgba(95, 123, 186, 0.55);
+  border-radius: 10px;
+  border: 2px solid rgba(0, 0, 0, 0.25);
+  transition: 0.3s;
+}
+
+/* hover */
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(95, 123, 186, 0.85);
+}
+
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 0;
+}
+
+#app {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+/* =======================
+   OVERLAY
+======================= */
+
+#overlay {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 40;
+}
+
+#overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+
+}
+
+/* =======================
+   LOGO HEADER FIX
+======================= */
+
+#logo-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 4px 4px;
+}
+
+#logo-icon {
+  width: 65px;
+  height: 65px;
+
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+#logo {
+  font-size: 18px;
+  font-weight: 650;
+  color: white;
+
+  letter-spacing: 0.5px;
+}
+
+/* subtitle تحت اللوجو */
+#subtitle {
+  margin-top: 6px;
+  margin-left: 15px;
+
+  font-size: 12px;
+  color: rgba(255,255,255,0.6);
+
+  letter-spacing: 1px;
+}
+
+
+
+/* =======================
+   MENU BUTTON
+======================= */
+
+#menu-toggle {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+
+  width: 45px;
+  height: 45px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: rgba(255,255,255,0.08);
+  color: white;
+
+  font-size: 22px;
+  cursor: pointer;
+
+  z-index: 120;
+  transition: 0.2s;
+}
+
+
+#menu-toggle:hover {
+  background: rgba(45, 45, 46, 0.35);
+  transform: none;
+}
+
+#menu-toggle.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.1s ease;
+}
+
+#close-sidebar {
+  position: absolute; /* بدل fixed عشان يبقى داخل sidebar */
+  top: 18px;
+  right: 10px; /* الأفضل في sidebar */
+
+  width: 35px;
+  height: 35px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background: rgba(255,255,255,0.06);
+  color: white;
+
+  font-size: 18px;
+  cursor: pointer;
+
+  z-index: 5;
+
+  transition: 0.25s ease;
+
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+#close-sidebar:hover {
+  background: rgba(255,255,255,0.15);
+  transform:  scale(1.05);
+  
+
+}
+
+#close-sidebar.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.1s ease;
+}
+
+
+/* =======================
+   SIDEBAR
+======================= */
+
+#sidebar {
+  position: fixed;
+  top: 0;
+  left: -280px;
+
+  width: 280px;
+  height: 100vh;
+
+  padding: 20px;
+  
+  background: rgba(20, 20, 30, 0.92);
+
+  border-right: 1px solid rgba(255,255,255,0.08);
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 22px;
+
+  transition: 0.3s ease;
+  z-index: 110;
+}
+
+#sidebar.active {
+  left: 0;
+}
+
+/* =======================
+   MENU
+======================= */
+
+#menu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.03);
+}
+
+.menu-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  border-radius: 12px;
+  background: rgba(255,255,255,0.12);
+  color: white;
+  padding: 12px;
+
+  border: none;
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.menu-btn:hover {
+  background: rgba(45, 45, 46, 0.35);
+  transform: translateX(6px);
+}
+
+.icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+
+#auth-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.03);
+}
+
+.auth-btn{
+   display: flex;
+  align-items: center;
+  gap: 12px;
+
+  border-radius: 12px;
+  background: rgba(255,255,255,0.12);
+  color: white;
+  padding: 12px;
+
+  border: none;
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.auth-btn-logout{
+   display: flex;
+  align-items: center;
+  gap: 12px;
+
+  border-radius: 12px;
+  background: rgba(255,255,255,0.12);
+  color: white;
+  padding: 12px;
+
+  border: none;
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.auth-btn.active {
+  background: rgba(95, 123, 186, 0.35);
+  transform: translateX(6px);
+ /* border-left: 3px solid #5F7BBA;*/
+}
+
+.auth-btn-logout.active {
+  background: rgba(255, 80, 80, 0.25);
+  transform: translateX(6px);
+  /*border-left: 3px solid rgba(255, 80, 80, 0.8);*/
+}
+
+
+.auth-btn:hover {
+  background: rgba(45, 45, 46, 0.35);
+  transform: translateX(6px);
+}
+
+.auth-btn-logout:hover {
+  background: rgba(45, 45, 46, 0.35);
+  transform: translateX(6px);
+}
+
+
+
+
+/* =======================
+   CHAT CONTAINER
+======================= */
+
+#chat-container {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+
+  width: 420px;
+  height: 65px;
+
+  display: flex;
+  flex-direction: column;
+
+  background: rgba(20,20,30,0.92);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 18px;
+
+  overflow: hidden;
+
+  z-index: 110;
+
+  transition: height 0.3s ease;
+}
+
+#chat-container.active {
+  min-height: 210px;
+  max-height: 390px;
+}
+
+/* =======================
+   CHAT HEADER
+======================= */
+
+#chat-header {
+  height: 65px;
+  
+  padding: 0 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  flex-shrink: 0;
+
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+
+  cursor: pointer;
+  z-index: 2;
+}
+
+#chat-title {
+  color: white;
+  font-size: 15px;
+}
+
+/* =======================
+   MINIMIZE BUTTON
+======================= */
+
+#minimize-chat {
+  width: 32px;
+  height: 32px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: rgba(255,255,255,0.08);
+
+  color: white;
+  cursor: pointer;
+}
+
+/* =======================
+   MESSAGES
+======================= */
+
+#messages {
+  flex: 1;
+  min-height: 0;
+
+  padding: 15px;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  color: white;
+  font-size: 14px;
+
+  opacity: 0;
+  transition: 0.25s;
+
+  scroll-behavior: smooth;
+}
+
+#messages div {
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+/* =======================
+   INPUT AREA
+======================= */
+
+#input-area {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+
+  padding: 15px;
+
+  opacity: 0;
+  transition: 0.25s;
+
+  flex-shrink: 0;
+}
+
+/* =======================
+   INPUT
+======================= */
+
+#input {
+  flex: 1;
+
+  height: 45px;
+  min-height: 45px;
+  max-height: 120px;
+
+  padding: 12px;
+
+  border: none;
+  outline: none;
+
+  border-radius: 12px;
+
+  background: rgba(255,255,255,0.08);
+  color: white;
+
+  resize: none;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Scrollbar */
+#input::-webkit-scrollbar {
+  width: 5px;
+}
+
+#input::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.25);
+  border-radius: 10px;
+}
+
+/* =======================
+   SEND BUTTON
+======================= */
+
+#send {
+  height: 45px;
+
+  padding: 0 14px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: #5F7BBA;
+  color: white;
+
+  cursor: pointer;
+
+  transition: 0.15s ease;
+  flex-shrink: 0;
+}
+
+#send:hover {
+  background: #536da7;
+}
+
+#send:active {
+  background: #43598a;
+  transform: scale(0.97);
+}
+
+/* =======================
+   SHOW CONTENT WHEN ACTIVE
+======================= */
+
+#chat-container.active #messages,
+#chat-container.active #input-area {
+  opacity: 1;
+}
+
+.msg {
+  margin-bottom: 10px;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+/* User messages */
+.user-msg {
+  text-align: right;
+  color: #dddbdb;
+}
+
+/* AI messages */
+.ai-msg {
+  text-align: left;
+  color: #ffffff;
+}
+
+/* اسم المستخدم */
+.user-msg strong {
+  color: #5F7BBA;
+}
+
+/* اسم AI */
+.ai-msg strong {
+  color: #5F7BBA;
+}
+/* =========================
+   CONTENT
+========================= */
+
+#content {
+  position: relative;
+  z-index: 5;
+}
+
+/* =========================
+   SECTIONS
+========================= */
+
+.page-section {
+  width: 100%;
+  min-height: 100vh;
+
+  padding: 100px 60px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  color: white;
+
+  text-align: center;
+}
+
+/* =========================
+   HERO HEADER (LOGO + TITLE)
+========================= */
+
+.hero-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 20px;
+
+  flex-wrap: wrap;
+
+  margin-bottom: 20px;
+}
+
+/* logo */
+.hero-logo {
+  width: 90px;
+  height: 90px;
+
+  object-fit: contain;
+
+  border-radius: 16px;
+
+  filter: drop-shadow(0 0 12px rgba(95,123,186,0.6));
+
+  /*animation: floatLogo 3s ease-in-out infinite;*/
+}
+
+/* title */
+.hero-title {
+  font-size: 70px;
+  font-weight: 800;
+
+  letter-spacing: 3px;
+
+  color: white;
+
+  text-shadow: 0 0 20px rgba(95,123,186,0.35);
+}
+
+/* floating animation */
+@keyframes floatLogo {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* =========================
+   HERO TEXT
+========================= */
+
+.hero-text {
+  margin-top: 10px;
+
+  font-size: 20px;
+
+  color: rgba(255,255,255,0.7);
+
+  max-width: 600px;
+}
+
+/* =========================
+   TITLES
+========================= */
+
+.section-title {
+  font-size: 42px;
+
+  margin-bottom: 50px;
+
+  text-shadow: 0 0 15px rgba(95,123,186,0.25);
+}
+
+
+/* =========================
+   HERO → NAV ON SCROLL
+========================= */
+.hero-header {
+  transition: all 0.9s ease;
+  position: relative;
+  z-index: 10;
+}
+
+/* بعد السكروول: صغير + يمين فوق بدون بوكس */
+.page-section.scrolled .hero-header {
+  position: fixed;
+  top: 1px;
+  right: -165px;
+  left: auto;
+  transform: scale(0.5);
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 10px;
+
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+
+  z-index: 200;
+}
+
+/* تصغير اللوجو */
+.page-section.scrolled .hero-logo {
+  width: 80px;
+  height: 80px;
+}
+
+/* تصغير العنوان */
+.page-section.scrolled .hero-title {
+  font-size: 70px;
+  letter-spacing: 1.5px;
+}
+
+/* النص الصغير لو موجود */
+.page-section.scrolled .hero-text {
+  display: none;
+}
+
+
+/* =========================
+   STATS
+========================= */
+
+.stats-grid {
+  display: flex;
+  gap: 25px;
+
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.stat-card {
+  width: 220px;
+
+  padding: 35px;
+
+  border-radius: 20px;
+
+  background: rgba(255,255,255,0.08);
+
+  backdrop-filter: blur(10px);
+
+  text-align: center;
+
+  transition: 0.3s;
+
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.stat-card:hover {
+  transform: translateY(-10px) scale(1.03);
+
+  background: rgba(95,123,186,0.18);
+
+  border: 1px solid rgba(95,123,186,0.35);
+}
+
+.stat-card h3 {
+  font-size: 40px;
+
+  color: #8ea7df;
+
+  margin-bottom: 12px;
+}
+
+/* =========================
+   CONTACT
+========================= */
+
+.socials {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 20px;
+
+  justify-content: center;
+  align-items: center;
+
+  margin-top: 20px;
+
+  max-width: 900px;   /* مهم جدًا عشان يكسّر السطور */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* =========================
+   SOCIAL BUTTON
+========================= */
+
+.social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  padding: 14px 22px;
+
+  border-radius: 14px;
+
+  background: rgba(255,255,255,0.08);
+
+  color: white;
+
+  text-decoration: none;
+
+  font-size: 15px;
+  font-weight: 500;
+
+  transition: 0.25s ease;
+
+  border: 1px solid rgba(255,255,255,0.08);
+
+  min-width: 160px;
+
+  flex: 0 0 auto; /* مهم جدًا: يمنع التمدد ويخليهم يتوزعوا طبيعي */
+}
+
+/* hover base */
+.social-btn:hover {
+  transform: translateY(-6px) scale(1.05);
+}
+
+/* =========================
+   ICONS
+========================= */
+
+.social-icon {
+  width: 30px;
+  height: 30px;
+
+  object-fit: contain;
+
+  flex-shrink: 0;
+}
+
+/* =========================
+   BRAND COLORS HOVER (FIXED)
+========================= */
+
+.social-btn.whatsapp:hover {
+  background: rgba(37, 211, 102, 0.20);
+  border: 1px solid rgba(37, 211, 102, 0.55);
+}
+
+.social-btn.linkedin:hover {
+  background: rgba(0, 119, 181, 0.20);
+  border: 1px solid rgba(0, 119, 181, 0.55);
+}
+
+.social-btn.facebook:hover {
+  background: rgba(24, 119, 242, 0.20);
+  border: 1px solid rgba(24, 119, 242, 0.55);
+}
+
+.social-btn.instagram:hover {
+  background: rgba(225, 48, 108, 0.20);
+  border: 1px solid rgba(225, 48, 108, 0.55);
+}
+
+.social-btn.tiktok:hover {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.social-btn.youtube:hover {
+  background: rgba(255, 0, 0, 0.20);
+  border: 1px solid rgba(255, 0, 0, 0.55);
+}
+
+.social-btn.phone:hover {
+  background: hsla(53, 70%, 78%, 0.2);
+  border: 1px solid hsla(44, 53%, 52%, 0.55);
+}
+
+.social-btn.email:hover {
+  background: hsla(352, 58%, 65%, 0.2);
+  border: 1px solid #b32b588c;
+}
+/* =========================
+   ICON GLOW ON HOVER
+========================= */
+
+.social-btn:hover .social-icon {
+  filter: drop-shadow(0 0 6px rgba(255,255,255,0.35));
+}
+
