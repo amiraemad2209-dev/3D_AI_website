@@ -1,15 +1,13 @@
 from dotenv import load_dotenv
 import os
-os.environ["GROQ_API_KEY"] = "PUT_YOUR_KEY_HERE"
-
+load_dotenv()
 # Set LangSmith environment variables GLOBAL first
 
 os.environ["LANGCHAIN_TRACING_V2"] = "true"
 os.environ["LANGCHAIN_ENDPOINT"] = "https://api.smith.langchain.com"
 os.environ["LANGCHAIN_PROJECT"] = "RAG_Pipeline"
-load_dotenv()
 
-os.environ["LANGCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY")
+os.environ["LANGCHAIN_API_KEY"] = os.getenv("GROQ_API_KEY")
 
 import fitz  # PyMuPDF
 from langchain_community.document_loaders import PyPDFLoader
@@ -378,7 +376,7 @@ def main():
     print(f"             Google Colab RAG Pipeline (Project: {project})")
     print("======================================================")
 
-    pdf_path = "data/transformer_explained.pdf"
+    pdf_path = "data/Section 2.pdf"
     if not os.path.exists(pdf_path):
         print(f"[ERROR] Content not found at path: {pdf_path}")
         return
@@ -480,7 +478,7 @@ def main():
                 print(f"[ERROR] RAGAS evaluation failed: {e}")
 
 print("[INFO] Loading PDF...") 
-pdf_path = "data/transformer_explained.pdf" 
+pdf_path = "data/Section 2.pdf" 
 chunks = load_and_chunk(pdf_path) 
 build_index(chunks) 
 build_bm25_index(chunks)

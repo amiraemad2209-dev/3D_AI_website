@@ -8,7 +8,7 @@ CORS(app)
 
 @app.route("/")
 def home():
-    return "RAG Backend Running 🚀"
+    return "RAG Backend Running 🚀  ( Backend is connected successfully)"
 
 @app.route("/chat", methods=["POST"])
 def chat():
