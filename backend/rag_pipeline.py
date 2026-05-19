@@ -149,7 +149,10 @@ def build_index(chunks: list[Document]) -> None:
     _collection.add(
         documents=texts,
         embeddings=embeddings.tolist(),
-        ids=[str(chunk.metadata["chunk_id"]) for chunk in chunks],
+        ids=[
+    f'{chunk.metadata["source"]}_{chunk.metadata["chunk_id"]}'
+    for chunk in chunks
+         ],
         metadatas=[chunk.metadata for chunk in chunks],
     )
     print(f"[INFO] Vector index built with {len(chunks)} chunks.")
@@ -376,16 +379,22 @@ def main():
     print(f"             Google Colab RAG Pipeline (Project: {project})")
     print("======================================================")
 
-    pdf_path = "data/Section 2.pdf"
-    if not os.path.exists(pdf_path):
-        print(f"[ERROR] Content not found at path: {pdf_path}")
-        return
+    pdf_folder = "data"
 
-    # Indexing Phase
-    print("\n--- Phase 1: Document Indexing ---")
-    chunks = load_and_chunk(pdf_path)
-    build_index(chunks)
-    build_bm25_index(chunks)
+    if not os.path.exists(pdf_folder):
+       print(f"[ERROR] Folder not found: {pdf_folder}")
+       return
+
+    all_chunks = []
+
+    for file in os.listdir(pdf_folder):
+        if file.endswith(".pdf"):
+           file_path = os.path.join(pdf_folder, file)
+           print(f"[INFO] Processing {file_path}")
+           all_chunks.extend(load_and_chunk(file_path))
+
+    build_index(all_chunks)
+    build_bm25_index(all_chunks)
     print("✅ Indexing Complete.")
 
     # Interactive Query Phase
@@ -477,13 +486,21 @@ def main():
             except Exception as e:
                 print(f"[ERROR] RAGAS evaluation failed: {e}")
 
-print("[INFO] Loading PDF...") 
-pdf_path = "data/Section 2.pdf" 
-chunks = load_and_chunk(pdf_path) 
-build_index(chunks) 
-build_bm25_index(chunks)
-print("[INFO] RAG Ready 🚀")
 
+
+pdf_folder = "data"
+all_chunks = []
+
+for file in os.listdir(pdf_folder):
+    if file.endswith(".pdf"):
+        file_path = os.path.join(pdf_folder, file)
+        print(f"[INFO] Processing {file_path}")
+        all_chunks.extend(load_and_chunk(file_path))
+
+build_index(all_chunks)
+build_bm25_index(all_chunks)
+
+print("[INFO] RAG Ready 🚀")
 
 if __name__ == "__main__":
     #main()       # for terminal loop
